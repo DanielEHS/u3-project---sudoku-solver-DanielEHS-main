@@ -1,0 +1,34 @@
+name: Hidden Tests
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out main repository
+        uses: actions/checkout@v4
+        with: 
+          path: main
+
+      - name: Get action repository
+        uses: actions/checkout@v4
+        with:
+          repository: MrsKlakaClasses23-24/hiddentestcases
+          token: ${{ secrets.SECRETTOKEN }}
+          path: my-tools
+
+
+      - name: Run my action
+        id: selftest
+        uses: ./my-tools
+        timeout-minutes: 1
+        with: 
+          repo: ${{ github.repository }}
+          student: ${{ github.actor }}
+          teacher: "eklaka"
+          testfile: "sudoku"
+          apikey: ${{ secrets.APITOKEN }}
+        
+      - name: Check outputs
+        run: |
+          test "${{ steps.selftest.outputs.all_tests_passed }}" == True
