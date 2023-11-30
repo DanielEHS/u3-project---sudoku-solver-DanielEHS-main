@@ -37,7 +37,7 @@ class SudokuSolver:
         self.cell_options = cell_options
 
     
-    # solve
+    # solve 
     # *************************
     # Takes a sudoku grid with some values filled in (2D array) and returns a solution grid 
     # with all cells filled in (also a 2D array).  Empty cell values are None.
@@ -63,8 +63,12 @@ class SudokuSolver:
         self.total_empty = 0
         self.index = 0
 
+        self.this_cell_options = []
+
         for y in range(self.size):
+            self.this_cell_options.append([])
             for x in range(self.size):
+                self.this_cell_options[y].append([])
                 if grid[y][x] == None:
                     self.empty_x_cells.append(x)
                     self.empty_y_cells.append(y)
@@ -74,6 +78,16 @@ class SudokuSolver:
                     self.cols[x].add(grid[y][x])
                     self.squares[self.get_square(y, x)].add(grid[y][x])
                     self.cells_remaining -= 1
+
+        for i in range(self.total_empty):
+            y = self.empty_y_cells[i]
+            x = self.empty_x_cells[i]
+            for char in self.cell_options:
+                if (char in self.rows[y]) or (char in self.cols[x]) or (char in self.squares[self.get_square(y, x)]):
+                    continue
+                else:
+                    self.this_cell_options[y][x].append(char)
+
 
         self.solve_recursive(self.empty_y_cells[0], self.empty_x_cells[0])
         if self.cells_remaining > 0:
@@ -87,9 +101,9 @@ class SudokuSolver:
         if self.cells_remaining == 0:
             return
 
-        for char in self.cell_options:
+        for char in self.this_cell_options[y][x]:
             if (char in self.rows[y]) or (char in self.cols[x]) or (char in self.squares[self.get_square(y, x)]):
-                continue
+                    continue
             else:
                 self.rows[y].add(char)
                 self.cols[x].add(char)
